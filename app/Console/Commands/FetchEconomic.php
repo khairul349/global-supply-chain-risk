@@ -19,10 +19,19 @@ class FetchEconomic extends Command
 
         $success = 0;
         $failed = 0;
+        $skipped = 0;
 
-        $countries = Country::all();
+        // Ambil semua negara
+        $countries = Country::orderBy('id')->get();
 
         foreach ($countries as $country) {
+
+            // Skip jika sudah pernah diambil
+            if (EconomicIndicator::where('country_id', $country->id)->exists()) {
+                $this->line($country->name . ' -> Sudah ada');
+                $skipped++;
+                continue;
+            }
 
             if (empty($country->cca3)) {
                 $failed++;
@@ -52,14 +61,19 @@ class FetchEconomic extends Command
             ]);
 
             $this->info($country->name . ' ✔');
+
             $success++;
+
+            // Delay 0.3 detik supaya tidak terlalu membebani API
+            usleep(300000);
         }
 
         $this->newLine();
 
         $this->info("==============================");
-        $this->info("Berhasil : {$success}");
-        $this->warn("Tidak ada data : {$failed}");
+        $this->info("Berhasil      : {$success}");
+        $this->line("Dilewati      : {$skipped}");
+        $this->warn("Tidak ada data: {$failed}");
         $this->info("==============================");
 
         return Command::SUCCESS;
@@ -73,6 +87,7 @@ class FetchEconomic extends Command
 
             $response = Http::timeout(60)
                 ->retry(3, 1000)
+                ->acceptJson()
                 ->get($url);
 
         } catch (\Exception $e) {
@@ -81,7 +96,6 @@ class FetchEconomic extends Command
                 'value' => null,
                 'year' => null,
             ];
-
         }
 
         if (!$response->successful()) {
@@ -90,7 +104,6 @@ class FetchEconomic extends Command
                 'value' => null,
                 'year' => null,
             ];
-
         }
 
         $json = $response->json();
@@ -101,7 +114,6 @@ class FetchEconomic extends Command
                 'value' => null,
                 'year' => null,
             ];
-
         }
 
         return [

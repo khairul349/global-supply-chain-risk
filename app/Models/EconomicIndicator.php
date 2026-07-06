@@ -13,4 +13,9 @@ class EconomicIndicator extends Model
         'population',
         'year',
     ];
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
 }

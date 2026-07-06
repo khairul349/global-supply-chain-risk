@@ -24,4 +24,29 @@ class Country extends Model
         'flag_png',
         'flag_svg',
     ];
+
+    public function economicIndicators()
+    {
+        return $this->hasMany(EconomicIndicator::class);
+    }
+
+    public function weatherSnapshots()
+    {
+        return $this->hasMany(WeatherSnapshot::class);
+    }
+
+    public function exchangeRates()
+    {
+        return $this->hasMany(ExchangeRate::class);
+    }
+
+    public function riskScores()
+    {
+        return $this->hasMany(RiskScore::class);
+    }
+
+    public function ports()
+    {
+        return $this->hasMany(Port::class);
+    }
 }
