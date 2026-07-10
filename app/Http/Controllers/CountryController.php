@@ -8,7 +8,7 @@ class CountryController extends Controller
 {
     public function index()
     {
-        return Country::orderBy('name')->get();
+        return Country::with('riskScores')->orderBy('name')->get();
     }
 
     public function show($id)
@@ -17,8 +17,16 @@ class CountryController extends Controller
             'economicIndicators',
             'weatherSnapshots',
             'exchangeRates',
-            'riskScores',
-            'ports',
+            'riskScores'
         ])->findOrFail($id);
+    }
+
+    public function detail($id)
+    {
+        $country = Country::with('riskScores')->findOrFail($id);
+
+        $risk = $country->riskScores->first();
+
+        return view('country', compact('country','risk'));
     }
 }

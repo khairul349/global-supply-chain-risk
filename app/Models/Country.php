@@ -44,9 +44,4 @@ class Country extends Model
     {
         return $this->hasMany(RiskScore::class);
     }
-
-    public function ports()
-    {
-        return $this->hasMany(Port::class);
-    }
 }
