@@ -6,5 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class NegativeWord extends Model
 {
-    //
+    protected $fillable = [
+        'word'
+    ];
+
+    public $timestamps = false;
 }

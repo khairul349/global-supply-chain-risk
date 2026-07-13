@@ -2,32 +2,75 @@
 
 @section('content')
 
-<h2 class="mb-4">
+<div class="container py-4">
 
-🌍 Global Supply Chain Risk Dashboard
+    <div class="d-flex justify-content-between align-items-center mb-5 mt-2">
 
-</h2>
+        <div>
 
-<div class="mb-3">
+            <h1 class="h3 fw-bold mb-1" style="letter-spacing: -0.02em;">
+                🌍 Global Supply Chain Risk Dashboard
+            </h1>
 
-    <a href="/export/pdf" class="btn btn-danger">
+            <small class="text-muted fw-medium">
+                Real-Time Global Logistics & Risk Intelligence Platform
+            </small>
 
-        📄 Export PDF
+        </div>
 
-    </a>
+        <div class="text-end">
+
+            <span class="badge bg-success fs-6 d-inline-flex align-items-center" id="liveStatus" style="padding: 8px 14px !important; border-radius: 10px !important;">
+                <span class="pulse-circle"></span>LIVE
+            </span>
+
+            <div class="mt-2">
+
+                <small class="text-muted fw-semibold" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+
+                    Last Sync :
+
+                    <span id="lastUpdate" class="text-main fw-normal" style="font-size: 12px; margin-left: 4px;">
+                        -
+                    </span>
+
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {{-- Statistik --}}
+    @include('partials.stats')
+
+    {{-- Chart --}}
+    @include('partials.chart')
+
+    {{-- Peta --}}
+    @include('partials.map')
+
+    {{-- Tabel --}}
+    @include('partials.risk-table')
 
 </div>
 
-@include('partials.filter')
+<script>
 
-@include('partials.stats')
+function updateClock(){
 
-@include('partials.chart')
+    const now = new Date();
 
-@include('partials.top-chart')
+    document.getElementById('lastUpdate').innerHTML =
+        now.toLocaleString();
 
-@include('partials.map')
+}
 
-@include('partials.risk-table')
+updateClock();
+
+setInterval(updateClock,1000);
+
+</script>
 
 @endsection
