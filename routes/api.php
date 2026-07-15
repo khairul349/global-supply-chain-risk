@@ -9,6 +9,7 @@ use App\Http\Controllers\TrendController;
 use App\Models\Port;
 use App\Http\Controllers\Api\AnalyticsApiController;
 use App\Models\RiskScore;
+use App\Http\Controllers\WeatherController;
 
 Route::get('/countries', [CountryController::class, 'index']);
 
@@ -32,6 +33,10 @@ Route::get('/ports', function () {
 
 });
 
+Route::get('/vessels', function () {
+    return \App\Models\Vessel::with('port')->get();
+});
+
 Route::get('/analytics', [AnalyticsApiController::class,'index']);
 
 Route::get('/high-risk', function () {
@@ -43,3 +48,6 @@ Route::get('/high-risk', function () {
         ->get();
 
 });
+
+Route::get('/weather', [WeatherController::class, 'getWeatherApi']);
+Route::post('/weather/refresh/{id}', [WeatherController::class, 'refreshWeather']);

@@ -126,7 +126,7 @@ let riskData = [];
 
 function loadRiskTable(){
 
-    fetch('/api/risk-scores')
+    fetch("{{ url('/api/risk-scores') }}")
 
     .then(response => response.json())
 
@@ -148,9 +148,9 @@ function loadRiskTable(){
 
 loadRiskTable();
 
-// refresh otomatis setiap 30 detik
+// refresh otomatis setiap 5 detik
 
-setInterval(loadRiskTable,30000);
+setInterval(loadRiskTable,5000);
 
 // ===============================
 // Render Table

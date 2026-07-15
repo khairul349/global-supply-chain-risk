@@ -74,13 +74,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function loadMap(){
 
+        let hasOpenPopup = false;
+        markerCluster.eachLayer(function(layer) {
+            if (layer.getPopup() && layer.getPopup().isOpen()) {
+                hasOpenPopup = true;
+            }
+        });
+        if (hasOpenPopup) return;
+
         markerCluster.clearLayers();
 
         Promise.all([
 
-            fetch('/api/countries').then(r=>r.json()),
+            fetch("{{ url('/api/countries') }}").then(r=>r.json()),
 
-            fetch('/api/risk-scores').then(r=>r.json())
+            fetch("{{ url('/api/risk-scores') }}").then(r=>r.json())
 
         ])
 
@@ -152,6 +160,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                         ${level}
                                     </span>
                                 </div>
+                                <div style="margin-top: 12px;">
+                                    <a href="{{ url('/country') }}/${country.id}" class="btn btn-sm btn-primary w-100 text-decoration-none" style="font-size: 11.5px !important; padding: 6px 12px !important; display: flex; align-items: center; justify-content: center; color: #ffffff !important; font-weight: 700; border-radius: 8px;">
+                                        View Details
+                                    </a>
+                                </div>
                             </div>
 
                         </div>
@@ -175,6 +188,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     loadMap();
+
+    setInterval(loadMap, 5000);
 
 });
 

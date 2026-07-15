@@ -18,8 +18,19 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'System Administrator',
+            'email' => 'admin@example.com',
+            'role' => 'admin',
+            'password' => bcrypt('password'),
         ]);
+
+        User::factory()->create([
+            'name' => 'Standard User',
+            'email' => 'user@example.com',
+            'role' => 'user',
+            'password' => bcrypt('password'),
+        ]);
+
+        $this->call(VesselSeeder::class);
     }
 }

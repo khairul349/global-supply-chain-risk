@@ -284,7 +284,7 @@ function animateCounter(id,value){
 
 function loadDashboard(){
 
-    fetch('/api/dashboard')
+    fetch("{{ url('/api/dashboard') }}")
 
     .then(res=>res.json())
 
@@ -339,6 +339,6 @@ function loadDashboard(){
 
 loadDashboard();
 
-setInterval(loadDashboard,30000);
+setInterval(loadDashboard, 5000);
 
 </script>

@@ -19,21 +19,26 @@
 
 let chart;
 
-fetch('/api/dashboard')
+function loadChart() {
+    fetch("{{ url('/api/dashboard') }}")
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('totalCountries').innerText = data.total_countries;
+        document.getElementById('highRisk').innerText = data.high_risk;
+        document.getElementById('mediumRisk').innerText = data.medium_risk;
+        document.getElementById('lowRisk').innerText = data.low_risk;
 
-.then(response => response.json())
+        if (chart) {
+            chart.data.datasets[0].data = [
+                data.high_risk,
+                data.medium_risk,
+                data.low_risk
+            ];
+            chart.update();
+            return;
+        }
 
-.then(data => {
-
-    document.getElementById('totalCountries').innerText = data.total_countries;
-
-    document.getElementById('highRisk').innerText = data.high_risk;
-
-    document.getElementById('mediumRisk').innerText = data.medium_risk;
-
-    document.getElementById('lowRisk').innerText = data.low_risk;
-
-    const ctx = document.getElementById('riskChart').getContext('2d');
+        const ctx = document.getElementById('riskChart').getContext('2d');
     
     // Create modern gradients for bars
     const gradientHigh = ctx.createLinearGradient(0, 0, 0, 300);
@@ -193,6 +198,10 @@ fetch('/api/dashboard')
         }, 100);
     });
 
-});
+    });
+}
+
+loadChart();
+setInterval(loadChart, 5000);
 
 </script>

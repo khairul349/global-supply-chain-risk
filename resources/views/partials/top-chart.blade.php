@@ -18,7 +18,7 @@
 
 <script>
 
-fetch('/api/risk-scores')
+fetch("{{ url('/api/risk-scores') }}")
 
 .then(res=>res.json())
 
