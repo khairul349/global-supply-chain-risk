@@ -57,68 +57,67 @@ function loadChart() {
     const textColor = isDark ? '#94a3b8' : '#64748b';
     const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
 
-    chart = new Chart(ctx, {
+    const chartType = localStorage.getItem('default_chart') || 'bar';
+    const enableAnim = localStorage.getItem('enable_chart_animation') !== 'off';
+    const animSpeed = localStorage.getItem('chart_animation_speed') || 'normal';
 
-        type: 'bar',
+    let animDuration = 1000;
+    if (!enableAnim) {
+        animDuration = 0;
+    } else if (animSpeed === 'slow') {
+        animDuration = 2000;
+    } else if (animSpeed === 'fast') {
+        animDuration = 500;
+    }
 
+    const config = {
+        type: chartType,
         data: {
-
             labels: [
-
                 'High Risk',
-
                 'Medium Risk',
-
                 'Low Risk'
-
             ],
-
             datasets: [{
-
                 label: 'Jumlah Negara',
-
                 data: [
-
                     data.high_risk,
-
                     data.medium_risk,
-
                     data.low_risk
-
                 ],
-
                 backgroundColor: [
                     gradientHigh,
                     gradientMedium,
                     gradientLow
                 ],
-                
                 borderColor: [
                     '#ef4444',
                     '#f59e0b',
                     '#10b981'
                 ],
-                
                 borderWidth: 1.5,
-                borderRadius: 12,
+                borderRadius: chartType === 'pie' ? 0 : 12,
                 borderSkipped: false,
-                barThickness: 50
-
+                barThickness: chartType === 'bar' ? 50 : undefined
             }]
-
         },
-
         options: {
-
             responsive: true,
             maintainAspectRatio: false,
-
+            animation: {
+                duration: animDuration
+            },
             plugins: {
-
                 legend: {
-
-                    display: false
-
+                    display: chartType === 'pie',
+                    position: 'right',
+                    labels: {
+                        color: textColor,
+                        font: {
+                            family: 'Plus Jakarta Sans',
+                            size: 12
+                        }
+                    }
                 },
                 tooltip: {
                     backgroundColor: isDark ? '#1e293b' : '#0f172a',
@@ -139,47 +138,44 @@ function loadChart() {
                     boxHeight: 8,
                     boxPadding: 4
                 }
+            }
+        }
+    };
 
-            },
-
-            scales: {
-
-                y: {
-
-                    beginAtZero: true,
-                    grid: {
-                        color: gridColor,
-                        drawTicks: false
-                    },
-                    ticks: {
-                        color: textColor,
-                        font: {
-                            family: 'Plus Jakarta Sans',
-                            size: 12
-                        },
-                        stepSize: 1
-                    }
-
+    if (chartType !== 'pie') {
+        config.options.scales = {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: gridColor,
+                    drawTicks: false
                 },
-                x: {
-                    grid: {
-                        display: false
+                ticks: {
+                    color: textColor,
+                    font: {
+                        family: 'Plus Jakarta Sans',
+                        size: 12
                     },
-                    ticks: {
-                        color: textColor,
-                        font: {
-                            family: 'Plus Jakarta Sans',
-                            weight: '600',
-                            size: 12
-                        }
+                    stepSize: 1
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    color: textColor,
+                    font: {
+                        family: 'Plus Jakarta Sans',
+                        weight: '600',
+                        size: 12
                     }
                 }
-
             }
+        };
+    }
 
-        }
-
-    });
+    chart = new Chart(ctx, config);
 
     // Theme Switch listener
     document.getElementById('darkModeBtn').addEventListener('click', () => {

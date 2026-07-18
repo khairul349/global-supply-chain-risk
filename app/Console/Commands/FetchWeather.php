@@ -15,7 +15,9 @@ class FetchWeather extends Command
 
     public function handle()
     {
-        $this->info('Mengambil data cuaca...');
+        $this->info("==============================");
+        $this->info("FETCH WEATHER");
+        $this->info("==============================");
 
         $success = 0;
         $failed = 0;
@@ -25,8 +27,11 @@ class FetchWeather extends Command
         foreach ($countries as $country) {
 
             if (!$country->latitude || !$country->longitude) {
-                $this->warn($country->name . ' -> Koordinat tidak ada');
+
+                $this->warn($country->name . " -> Koordinat tidak tersedia");
+
                 $failed++;
+
                 continue;
             }
 
@@ -34,57 +39,98 @@ class FetchWeather extends Command
 
             try {
 
-                $response = Http::timeout(30)
-                    ->retry(3, 1000)
+                $response = Http::timeout(20)
+                    ->retry(2, 1000)
                     ->acceptJson()
                     ->get($url);
 
             } catch (\Exception $e) {
 
-                $this->error($country->name . ' -> Timeout');
+                $this->error($country->name . " -> Timeout");
+
                 $failed++;
+
                 continue;
             }
 
             if (!$response->successful()) {
 
-                $this->warn($country->name . ' -> Gagal');
+                $this->error($country->name . " -> Gagal mengambil data");
+
                 $failed++;
+
                 continue;
             }
 
             $current = $response->json()['current'] ?? [];
 
-            $temperature = $current['temperature_2m'] ?? null;
-            $windSpeed = $current['wind_speed_10m'] ?? null;
+            $temperature = $current['temperature_2m'] ?? 0;
+
+            $windSpeed = $current['wind_speed_10m'] ?? 0;
+
             $rainfall = $current['rain'] ?? 0;
 
-            // Penentuan risiko badai sederhana
-            if ($windSpeed >= 60 || $rainfall >= 50) {
+            /*
+            |--------------------------------------------------------------------------
+            | Storm Risk
+            |--------------------------------------------------------------------------
+            */
+
+            if ($windSpeed >= 35 || $rainfall >= 15) {
+
                 $stormRisk = 'high';
-            } elseif ($windSpeed >= 30 || $rainfall >= 20) {
+
+            } elseif ($windSpeed >= 20 || $rainfall >= 5) {
+
                 $stormRisk = 'medium';
+
             } else {
+
                 $stormRisk = 'low';
             }
 
-            WeatherSnapshot::create([
-                'country_id' => $country->id,
-                'temperature' => $temperature,
-                'wind_speed' => $windSpeed,
-                'rainfall' => $rainfall,
-                'storm_risk' => $stormRisk,
-            ]);
+            WeatherSnapshot::updateOrCreate(
 
-            $this->info($country->name . ' ✔');
+                [
+
+                    'country_id' => $country->id
+
+                ],
+
+                [
+
+                    'temperature' => $temperature,
+
+                    'wind_speed' => $windSpeed,
+
+                    'rainfall' => $rainfall,
+
+                    'storm_risk' => $stormRisk
+
+                ]
+
+            );
+
+            $this->line(
+
+                $country->name .
+                " | Temp : {$temperature}°C" .
+                " | Wind : {$windSpeed}" .
+                " | Rain : {$rainfall}" .
+                " | Risk : {$stormRisk}"
+
+            );
 
             $success++;
 
-            usleep(300000);
+            usleep(150000);
+
         }
 
         $this->newLine();
 
+        $this->info("==============================");
+        $this->info("WEATHER UPDATE FINISHED");
         $this->info("==============================");
         $this->info("Berhasil : {$success}");
         $this->warn("Gagal : {$failed}");

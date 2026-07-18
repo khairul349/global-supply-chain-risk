@@ -7,6 +7,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- Load preferences immediately to avoid FOUC -->
+    <script>
+        (function() {
+            // Theme Loader
+            const theme = localStorage.getItem('theme') || 'dark';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('theme-dark');
+            } else if (theme === 'light') {
+                document.documentElement.classList.add('theme-light');
+            } else {
+                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (isDark) {
+                    document.documentElement.classList.add('theme-dark');
+                } else {
+                    document.documentElement.classList.add('theme-light');
+                }
+            }
+
+            // Accent Color overrides
+            const accent = localStorage.getItem('accent_color') || 'purple';
+            let gradient = 'linear-gradient(135deg, #8b5cf6, #a78bfa)';
+            let mainColor = '#8b5cf6';
+            let glowColor = 'rgba(139, 92, 246, 0.45)';
+            let rgb = '139, 92, 246';
+
+            if (accent === 'blue') {
+                gradient = 'linear-gradient(135deg, #3b82f6, #60a5fa)';
+                mainColor = '#3b82f6';
+                glowColor = 'rgba(59, 130, 246, 0.45)';
+                rgb = '59, 130, 246';
+            } else if (accent === 'green') {
+                gradient = 'linear-gradient(135deg, #10b981, #34d399)';
+                mainColor = '#10b981';
+                glowColor = 'rgba(16, 185, 129, 0.45)';
+                rgb = '16, 185, 129';
+            } else if (accent === 'orange') {
+                gradient = 'linear-gradient(135deg, #f59e0b, #fbbf24)';
+                mainColor = '#f59e0b';
+                glowColor = 'rgba(245, 158, 11, 0.45)';
+                rgb = '245, 158, 11';
+            } else if (accent === 'red') {
+                gradient = 'linear-gradient(135deg, #ef4444, #f87171)';
+                mainColor = '#ef4444';
+                glowColor = 'rgba(239, 68, 68, 0.45)';
+                rgb = '239, 68, 68';
+            }
+
+            const css = `
+                :root {
+                    --accent-primary: ${gradient} !important;
+                    --theme-color-main: ${mainColor} !important;
+                }
+                .btn-glass:hover, .btn:hover, .navbar .btn:hover {
+                    box-shadow: 0 0 15px ${glowColor} !important;
+                }
+                .nav-item.active {
+                    color: ${mainColor} !important;
+                    border-color: rgba(${rgb}, 0.25) !important;
+                    background: rgba(${rgb}, 0.12) !important;
+                }
+                .text-primary, .text-main, .brand-subtitle {
+                    color: ${mainColor} !important;
+                }
+                body.disable-animations * {
+                    transition: none !important;
+                    animation: none !important;
+                }
+            `;
+            const style = document.createElement('style');
+            style.id = 'accent-override-style';
+            style.innerHTML = css;
+            document.head.appendChild(style);
+
+            // Collapsed Sidebar Initial state
+            const sidebar = localStorage.getItem('sidebar_state') || 'expanded';
+            if (sidebar === 'collapsed') {
+                document.documentElement.classList.add('sidebar-collapsed-init');
+            }
+        })();
+    </script>
+
     <title>Global Supply Chain Risk Platform</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -324,6 +405,151 @@
             color: rgba(255, 255, 255, 0.4);
         }
 
+        /* Notification Center Dropdown */
+        .notification-bell { position: relative; }
+        .notif-dropdown {
+            position: absolute;
+            top: calc(100% + 12px);
+            right: -60px;
+            width: 420px;
+            max-height: 560px;
+            background: rgba(15, 8, 30, 0.97);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(139,92,246,0.1);
+            z-index: 99999;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: notifSlideDown 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        .notif-dropdown.show { display: flex; }
+        @keyframes notifSlideDown {
+            from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .notif-header {
+            padding: 16px 18px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .notif-header h6 { margin: 0; font-size: 15px; font-weight: 800; color: #fff; }
+        .notif-header-actions { display: flex; gap: 8px; }
+        .notif-header-actions button {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 600;
+            padding: 4px 10px; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+        }
+        .notif-header-actions button:hover { background: rgba(139,92,246,0.15); color: #c084fc; }
+        .notif-search {
+            padding: 8px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .notif-search input {
+            width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px; padding: 8px 12px; color: #fff; font-size: 12px; outline: none;
+        }
+        .notif-search input::placeholder { color: rgba(255,255,255,0.3); }
+        .notif-filters {
+            display: flex; gap: 4px; padding: 8px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.04); overflow-x: auto;
+        }
+        .notif-filter-btn {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600;
+            padding: 4px 12px; border-radius: 20px; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+        }
+        .notif-filter-btn.active, .notif-filter-btn:hover {
+            background: rgba(139,92,246,0.2); color: #c084fc; border-color: rgba(139,92,246,0.3);
+        }
+        .notif-list {
+            flex: 1; overflow-y: auto; max-height: 340px;
+            scrollbar-width: thin; scrollbar-color: rgba(139,92,246,0.3) transparent;
+        }
+        .notif-item {
+            display: flex; gap: 12px; padding: 14px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .notif-item:hover { background: rgba(139,92,246,0.06); }
+        .notif-item.unread { border-left: 3px solid #8b5cf6; }
+        .notif-item.unread::after {
+            content: ''; position: absolute; top: 18px; right: 16px;
+            width: 8px; height: 8px; background: #8b5cf6; border-radius: 50%;
+        }
+        .notif-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0;
+        }
+        .notif-icon.risk { background: rgba(239,68,68,0.15); }
+        .notif-icon.weather { background: rgba(59,130,246,0.15); }
+        .notif-icon.news { background: rgba(245,158,11,0.15); }
+        .notif-icon.economic { background: rgba(16,185,129,0.15); }
+        .notif-content { flex: 1; min-width: 0; }
+        .notif-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+        .notif-desc { font-size: 12px; color: rgba(255,255,255,0.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .notif-time { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+        .notif-actions {
+            display: flex; gap: 4px; position: absolute; top: 12px; right: 12px;
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .notif-item:hover .notif-actions { opacity: 1; }
+        .notif-actions button {
+            background: rgba(255,255,255,0.06); border: none; color: rgba(255,255,255,0.5);
+            width: 24px; height: 24px; border-radius: 6px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.2s;
+        }
+        .notif-actions button:hover { background: rgba(139,92,246,0.2); color: #c084fc; }
+        .notif-empty {
+            padding: 40px 20px; text-align: center; color: rgba(255,255,255,0.3);
+            font-size: 13px; font-weight: 600;
+        }
+
+        /* Profile Dropdown */
+        .user-profile { position: relative; cursor: pointer; }
+        .profile-dropdown {
+            position: absolute; top: calc(100% + 12px); right: 0; width: 240px;
+            background: rgba(15,8,30,0.97); backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.5); z-index: 99999;
+            display: none; overflow: hidden;
+            animation: notifSlideDown 0.2s cubic-bezier(0.4,0,0.2,1);
+        }
+        .profile-dropdown.show { display: block; }
+        .profile-dd-header {
+            padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex; gap: 12px; align-items: center;
+        }
+        .profile-dd-header .dd-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 800; font-size: 15px;
+            border: 2px solid rgba(255,255,255,0.15);
+        }
+        .profile-dd-header .dd-info { flex: 1; }
+        .profile-dd-header .dd-name { font-size: 13px; font-weight: 700; color: #fff; }
+        .profile-dd-header .dd-email { font-size: 11px; color: rgba(255,255,255,0.4); }
+        .profile-dd-menu { padding: 6px 0; }
+        .profile-dd-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 16px; color: rgba(255,255,255,0.7);
+            font-size: 13px; font-weight: 600; text-decoration: none;
+            transition: all 0.2s; cursor: pointer; border: none; background: none; width: 100%;
+        }
+        .profile-dd-item:hover { background: rgba(139,92,246,0.1); color: #c084fc; }
+        .profile-dd-item.danger { color: rgba(239,68,68,0.8); }
+        .profile-dd-item.danger:hover { background: rgba(239,68,68,0.1); color: #f87171; }
+        .profile-dd-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0; }
+
+        @media (max-width: 576px) {
+            .notif-dropdown { width: calc(100vw - 20px); right: -100px; }
+            .profile-dropdown { width: 200px; }
+        }
+
         /* Glassmorphism Cards */
         .card {
             background: rgba(255, 255, 255, 0.02) !important;
@@ -618,6 +844,27 @@
                 padding: 16px 20px;
             }
         }
+        
+        /* Collapsed Sidebar styles for desktop viewports */
+        @media (min-width: 992px) {
+            #wrapper.sidebar-collapsed #sidebar-wrapper {
+                min-width: 80px;
+                max-width: 80px;
+                overflow: hidden;
+            }
+            #wrapper.sidebar-collapsed #sidebar-wrapper .brand-text,
+            #wrapper.sidebar-collapsed #sidebar-wrapper .brand-subtitle,
+            #wrapper.sidebar-collapsed #sidebar-wrapper .nav-section-title,
+            #wrapper.sidebar-collapsed #sidebar-wrapper .nav-item span:not(.nav-icon) {
+                display: none !important;
+            }
+            #wrapper.sidebar-collapsed #sidebar-wrapper .nav-item {
+                justify-content: center;
+                padding: 12px;
+                margin-left: 8px;
+                margin-right: 8px;
+            }
+        }
     </style>
 
     @stack('styles')
@@ -677,6 +924,16 @@
                 <span class="nav-icon">📰</span> News & Events
             </a>
 
+            @if(auth()->check() && auth()->user()->role === 'admin')
+                <div class="nav-section-title">ADMIN PANEL (User Administrator Only)</div>
+                <a href="{{ route('users.index') }}" class="nav-item {{ Request::is('admin/users*') ? 'active' : '' }}">
+                    <span class="nav-icon">👥</span> User Management
+                </a>
+                <a href="{{ route('articles.index') }}" class="nav-item {{ Request::is('admin/articles*') ? 'active' : '' }}">
+                    <span class="nav-icon">📰</span> Article Management
+                </a>
+            @endif
+
             <div class="nav-section-title">Analytics</div>
             
             <a href="{{ url('/analytics') }}" class="nav-item {{ Request::is('analytics') ? 'active' : '' }}">
@@ -691,7 +948,7 @@
                 <span class="nav-icon">🔀</span> Compare
             </a>
             
-            <a href="#" class="nav-item disabled-nav-item">
+            <a href="{{ route('map') }}" class="nav-item {{ Request::is('map') ? 'active' : '' }}">
                 <span class="nav-icon">🌍</span> Global Map
             </a>
 
@@ -701,7 +958,7 @@
                 <span class="nav-icon">🌙</span> Dark Mode
             </a>
             
-            <a href="#" class="nav-item disabled-nav-item">
+            <a href="{{ route('settings') }}" class="nav-item {{ Request::is('settings') ? 'active' : '' }}">
                 <span class="nav-icon">⚙️</span> Settings
             </a>
             
@@ -742,23 +999,65 @@
                     </button>
                 @endif
 
-                <!-- Notification Bell -->
-                <div class="notification-bell">
+                <!-- Notification Bell with Dropdown -->
+                <div class="notification-bell" id="notifBellTrigger">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                         <path d="M12,2A2,2 0 0,0 10,4A2,2 0 0,0 10,4.29C7.12,5.14 5,7.82 5,11V17L3,19V20H21V19L19,17V11C19,7.82 16.88,5.14 14,4.29A2,2 0 0,0 14,4A2,2 0 0,0 12,2M12,22A2,2 0 0,0 14,20H10A2,2 0 0,0 12,22Z"/>
                     </svg>
-                    <span class="bell-badge">9+</span>
+                    <span class="bell-badge" id="notifBadge">0</span>
+
+                    <!-- Notification Dropdown Panel -->
+                    <div class="notif-dropdown" id="notifDropdown">
+                        <div class="notif-header">
+                            <h6>🔔 Notifications</h6>
+                            <div class="notif-header-actions">
+                                <button onclick="NotifCenter.markAllRead(event)">✓ Read All</button>
+                                <button onclick="NotifCenter.clearAll(event)">🗑 Clear</button>
+                            </div>
+                        </div>
+                        <div class="notif-search">
+                            <input type="text" id="notifSearchInput" placeholder="Search notifications..." oninput="NotifCenter.render()">
+                        </div>
+                        <div class="notif-filters">
+                            <button class="notif-filter-btn active" data-filter="all" onclick="NotifCenter.setFilter('all', this)">All</button>
+                            <button class="notif-filter-btn" data-filter="unread" onclick="NotifCenter.setFilter('unread', this)">Unread</button>
+                            <button class="notif-filter-btn" data-filter="risk" onclick="NotifCenter.setFilter('risk', this)">Risk</button>
+                            <button class="notif-filter-btn" data-filter="weather" onclick="NotifCenter.setFilter('weather', this)">Weather</button>
+                            <button class="notif-filter-btn" data-filter="news" onclick="NotifCenter.setFilter('news', this)">News</button>
+                            <button class="notif-filter-btn" data-filter="economic" onclick="NotifCenter.setFilter('economic', this)">Economic</button>
+                        </div>
+                        <div class="notif-list" id="notifList"></div>
+                    </div>
                 </div>
 
-                <!-- User Profile -->
+                <!-- User Profile with Dropdown -->
                 @if(auth()->check())
-                    <div class="user-profile">
+                    <div class="user-profile" id="profileTrigger">
                         <div class="user-avatar">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
                         <div class="user-info d-none d-sm-flex">
                             <span class="user-name">{{ auth()->user()->name }}</span>
                             <span class="user-role">{{ auth()->user()->role === 'admin' ? 'Administrator' : 'Standard User' }}</span>
+                        </div>
+
+                        <!-- Profile Dropdown Menu -->
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-dd-header">
+                                <div class="dd-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                                <div class="dd-info">
+                                    <div class="dd-name">{{ auth()->user()->name }}</div>
+                                    <div class="dd-email">{{ auth()->user()->email }}</div>
+                                </div>
+                            </div>
+                            <div class="profile-dd-menu">
+                                <a href="{{ route('profile') }}" class="profile-dd-item">👤 View Profile</a>
+                                <a href="{{ route('profile') }}#edit" class="profile-dd-item">✏️ Edit Profile</a>
+                                <a href="{{ route('profile') }}#security" class="profile-dd-item">🔒 Security</a>
+                                <a href="{{ route('profile') }}#activity" class="profile-dd-item">📋 Activity Log</a>
+                                <div class="profile-dd-divider"></div>
+                                <button class="profile-dd-item danger" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">🚪 Logout</button>
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -792,41 +1091,150 @@
         document.getElementById("loader").style.display = "none";
     }
 
-    // Toggle Sidebar (Mobile)
-    const wrapper = document.getElementById("wrapper");
-    const menuToggle = document.getElementById("menu-toggle");
-    if (menuToggle) {
-        menuToggle.addEventListener("click", function(e) {
+    
+    // 1. Theme and Preferences initialization logic
+    const body = document.body;
+    const btn = document.getElementById("darkModeBtn");
+    const theme = localStorage.getItem('theme') || 'dark';
+    
+    if (theme === 'dark') {
+        body.classList.add("bg-dark", "text-white");
+        if (btn) btn.innerHTML = '<span class="nav-icon">☀</span> Light Mode';
+    } else if (theme === 'light') {
+        body.classList.remove("bg-dark", "text-white");
+        if (btn) btn.innerHTML = '<span class="nav-icon">🌙</span> Dark Mode';
+    } else {
+        // Auto
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (isDark) {
+            body.classList.add("bg-dark", "text-white");
+        } else {
+            body.classList.remove("bg-dark", "text-white");
+        }
+        if (btn) btn.innerHTML = '<span class="nav-icon">🌗</span> Auto Theme';
+    }
+
+    if (btn) {
+        btn.addEventListener("click", (e) => {
             e.preventDefault();
-            wrapper.classList.toggle("toggled");
+            const current = localStorage.getItem('theme') || 'dark';
+            let next = 'light';
+            if (current === 'light') {
+                next = 'dark';
+            }
+            localStorage.setItem('theme', next);
+            window.location.reload();
         });
     }
 
-    // Dark Mode Theme toggle logic
-    const body = document.body;
-    const btn = document.getElementById("darkModeBtn");
-    
-    // Set theme text correctly on load
-    if (localStorage.getItem("theme") === "dark") {
-        body.classList.add("bg-dark", "text-white");
-        btn.innerHTML = '<span class="nav-icon">☀</span> Light Mode';
-    } else {
-        btn.innerHTML = '<span class="nav-icon">🌙</span> Dark Mode';
+    // 2. Animations preference
+    const enableAnimations = localStorage.getItem('enable_animations') !== 'off';
+    if (!enableAnimations) {
+        body.classList.add('disable-animations');
     }
 
-    btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        body.classList.toggle("bg-dark");
-        body.classList.toggle("text-white");
+    // 3. Collapsed sidebar initial setup
+    const wrapper = document.getElementById("wrapper");
+    if (document.documentElement.classList.contains('sidebar-collapsed-init')) {
+        if (wrapper) wrapper.classList.add('sidebar-collapsed');
+        document.documentElement.classList.remove('sidebar-collapsed-init');
+    }
+
+    // 4. Widget navigations and dashboard components visibility
+    function applyWidgetVisibility() {
+        const showWeather = localStorage.getItem('show_weather_widget') !== 'off';
+        const showNews = localStorage.getItem('show_news_widget') !== 'off';
+        const showAnalytics = localStorage.getItem('show_analytics_widget') !== 'off';
+        const showPorts = localStorage.getItem('show_ports_widget') !== 'off';
+
+        const weatherItem = document.querySelector('a[href*="/weather"]');
+        const newsItem = document.querySelector('a[href*="/news"]');
+        const analyticsItem = document.querySelector('a[href*="/analytics"]');
+        const portsItem = document.querySelector('a[href*="/ports"]');
+
+        if (weatherItem) weatherItem.style.display = showWeather ? '' : 'none';
+        if (newsItem) newsItem.style.display = showNews ? '' : 'none';
+        if (analyticsItem) analyticsItem.style.display = showAnalytics ? '' : 'none';
+        if (portsItem) portsItem.style.display = showPorts ? '' : 'none';
         
-        if (body.classList.contains("bg-dark")) {
-            localStorage.setItem("theme", "dark");
-            btn.innerHTML = '<span class="nav-icon">☀</span> Light Mode';
-        } else {
-            localStorage.setItem("theme", "light");
-            btn.innerHTML = '<span class="nav-icon">🌙</span> Dark Mode';
+        // Dashboard cards
+        if (window.location.pathname === '/' || window.location.pathname === '/index') {
+            const chartCard = document.querySelector('canvas#riskChart')?.closest('.card');
+            const mapCard = document.querySelector('div#map')?.closest('.card');
+            
+            if (chartCard) chartCard.style.display = showAnalytics ? '' : 'none';
+            if (mapCard) mapCard.style.display = showPorts ? '' : 'none';
         }
-    });
+    }
+    applyWidgetVisibility();
+
+    // 5. User Preferences formatting library
+    window.UserPrefs = {
+        getLang: () => localStorage.getItem('pref_lang') || 'en',
+        getDateFormat: () => localStorage.getItem('pref_date_format') || 'DD/MM/YYYY',
+        getNumberFormat: () => localStorage.getItem('pref_number_format') || '1,000.00',
+        getTempUnit: () => localStorage.getItem('pref_temp_unit') || 'Celsius',
+        getWindUnit: () => localStorage.getItem('pref_wind_unit') || 'km/h',
+        getDistUnit: () => localStorage.getItem('pref_dist_unit') || 'km',
+        
+        formatNumber: (num) => {
+            if (num === null || num === undefined || isNaN(num)) return '-';
+            const format = UserPrefs.getNumberFormat();
+            if (format === '1.000,00') {
+                return Number(num).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            } else {
+                return Number(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+        },
+        formatTemp: (celsius) => {
+            if (celsius === null || celsius === undefined || isNaN(celsius)) return '-';
+            const unit = UserPrefs.getTempUnit();
+            if (unit === 'Fahrenheit') {
+                return Math.round((celsius * 9/5) + 32) + ' °F';
+            }
+            return Math.round(celsius) + ' °C';
+        },
+        formatWind: (kmh) => {
+            if (kmh === null || kmh === undefined || isNaN(kmh)) return '-';
+            const unit = UserPrefs.getWindUnit();
+            if (unit === 'mph') {
+                return Math.round(kmh * 0.621371) + ' mph';
+            }
+            return Math.round(kmh) + ' km/h';
+        },
+        formatDist: (km) => {
+            if (km === null || km === undefined || isNaN(km)) return '-';
+            const unit = UserPrefs.getDistUnit();
+            if (unit === 'mile') {
+                return Math.round(km * 0.621371) + ' mi';
+            }
+            return Math.round(km) + ' km';
+        },
+        formatDate: (dateStr) => {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return dateStr;
+            const dd = String(date.getDate()).padStart(2, '0');
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const yyyy = date.getFullYear();
+            
+            const format = UserPrefs.getDateFormat();
+            if (format === 'MM/DD/YYYY') return `${mm}/${dd}/${yyyy}`;
+            if (format === 'YYYY/MM/DD') return `${yyyy}/${mm}/${dd}`;
+            return `${dd}/${mm}/${yyyy}`;
+        }
+    };
+
+    // 6. Dashboard Auto Refresh
+    const autoRefresh = localStorage.getItem('auto_refresh') !== 'off';
+    const refreshInterval = parseInt(localStorage.getItem('refresh_interval')) || 15000;
+    if (autoRefresh && (window.location.pathname === '/' || window.location.pathname === '/index')) {
+        setInterval(() => {
+            if (typeof loadDashboard === 'function') loadDashboard();
+            if (typeof loadChart === 'function') loadChart();
+            if (typeof loadMap === 'function') loadMap();
+        }, refreshInterval);
+    }
 </script>
 
 <!-- High Risk Alerts Toast -->
@@ -846,6 +1254,15 @@
     let lastHighRisk = null;
 
     function checkHighRisk() {
+        // Notification settings
+        const enableToast = localStorage.getItem('enable_toast') !== 'off';
+        const enableDesktop = localStorage.getItem('enable_desktop') === 'on';
+        const triggerHighRisk = localStorage.getItem('alert_high_risk') !== 'off';
+        const triggerWeather = localStorage.getItem('alert_weather') !== 'off';
+        const triggerNews = localStorage.getItem('alert_news') !== 'off';
+
+        if (!enableToast && !enableDesktop) return;
+
         fetch("{{ url('/api/high-risk') }}")
             .then(r => r.json())
             .then(data => {
@@ -856,9 +1273,42 @@
                 data.forEach(item => {
                     if (!lastHighRisk.includes(item.id)) {
                         lastHighRisk.push(item.id);
-                        document.getElementById("toastMessage").innerHTML =
-                            "<strong>" + item.country.name + "</strong><br>Risk Score : " + item.total_score;
-                        new bootstrap.Toast(document.getElementById("riskToast")).show();
+                        
+                        let showAlert = false;
+                        let alertTitle = "Risk Alert";
+                        let alertBody = "";
+
+                        // Determine if we should show alert based on preferences
+                        if (item.risk_level === 'High' && triggerHighRisk) {
+                            showAlert = true;
+                            alertTitle = "⚠️ High Risk Alert";
+                            alertBody = `${item.country.name} has entered HIGH risk level (Score: ${item.total_score})`;
+                        } else if (item.weather_score >= 60 && triggerWeather) {
+                            showAlert = true;
+                            alertTitle = "⛈️ Weather Alert";
+                            alertBody = `Extreme weather risk detected in ${item.country.name} (Weather Score: ${item.weather_score})`;
+                        } else if (item.news_score >= 60 && triggerNews) {
+                            showAlert = true;
+                            alertTitle = "📰 News Alert";
+                            alertBody = `Critical security/economic events reported in ${item.country.name} (News Score: ${item.news_score})`;
+                        }
+
+                        if (showAlert) {
+                            if (enableToast) {
+                                const toastEl = document.getElementById("riskToast");
+                                if (toastEl) {
+                                    document.getElementById("toastMessage").innerHTML =
+                                        `<strong>${alertTitle}</strong><br>${alertBody}`;
+                                    new bootstrap.Toast(toastEl).show();
+                                }
+                            }
+                            if (enableDesktop && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                                new Notification(alertTitle, {
+                                    body: alertBody,
+                                    icon: item.country.flag_png || '/favicon.ico'
+                                });
+                            }
+                        }
                     }
                 });
             });
@@ -892,6 +1342,246 @@
             alert('An error occurred while updating watchlist.');
         });
     }
+
+    // =============================================
+    // NOTIFICATION CENTER ENGINE
+    // =============================================
+    window.NotifCenter = {
+        KEY: 'notif_center_items',
+        filter: 'all',
+
+        getAll() {
+            try { return JSON.parse(localStorage.getItem(this.KEY)) || []; }
+            catch { return []; }
+        },
+        save(items) { localStorage.setItem(this.KEY, JSON.stringify(items)); },
+
+        add(type, title, desc) {
+            const items = this.getAll();
+            const id = Date.now() + '_' + Math.random().toString(36).substr(2,5);
+            items.unshift({ id, type, title, desc, time: new Date().toISOString(), read: false });
+            if (items.length > 100) items.length = 100;
+            this.save(items);
+            this.render();
+        },
+
+        markRead(id, e) {
+            if (e) e.stopPropagation();
+            const items = this.getAll();
+            const item = items.find(i => i.id === id);
+            if (item) item.read = true;
+            this.save(items);
+            this.render();
+        },
+
+        deleteItem(id, e) {
+            if (e) e.stopPropagation();
+            let items = this.getAll().filter(i => i.id !== id);
+            this.save(items);
+            this.render();
+        },
+
+        markAllRead(e) {
+            if (e) e.stopPropagation();
+            const items = this.getAll();
+            items.forEach(i => i.read = true);
+            this.save(items);
+            this.render();
+        },
+
+        clearAll(e) {
+            if (e) e.stopPropagation();
+            this.save([]);
+            this.render();
+        },
+
+        setFilter(f, btn) {
+            this.filter = f;
+            document.querySelectorAll('.notif-filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            this.render();
+        },
+
+        timeAgo(iso) {
+            const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+            if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+            return Math.floor(diff/86400) + 'd ago';
+        },
+
+        getIcon(type) {
+            const map = { risk: '⚠️', weather: '⛈️', news: '📰', economic: '📊' };
+            return map[type] || '🔔';
+        },
+
+        render() {
+            let items = this.getAll();
+            const search = (document.getElementById('notifSearchInput')?.value || '').toLowerCase();
+
+            if (search) items = items.filter(i => i.title.toLowerCase().includes(search) || i.desc.toLowerCase().includes(search));
+            if (this.filter === 'unread') items = items.filter(i => !i.read);
+            else if (this.filter !== 'all') items = items.filter(i => i.type === this.filter);
+
+            const list = document.getElementById('notifList');
+            if (!list) return;
+
+            if (items.length === 0) {
+                list.innerHTML = '<div class="notif-empty">🔕 No notifications</div>';
+            } else {
+                list.innerHTML = items.slice(0, 50).map(i => `
+                    <div class="notif-item ${i.read ? '' : 'unread'}" onclick="NotifCenter.markRead('${i.id}')">
+                        <div class="notif-icon ${i.type}">${this.getIcon(i.type)}</div>
+                        <div class="notif-content">
+                            <div class="notif-title">${i.title}</div>
+                            <div class="notif-desc">${i.desc}</div>
+                            <div class="notif-time">${this.timeAgo(i.time)}</div>
+                        </div>
+                        <div class="notif-actions">
+                            <button onclick="NotifCenter.markRead('${i.id}', event)" title="Mark Read">✓</button>
+                            <button onclick="NotifCenter.deleteItem('${i.id}', event)" title="Delete">✕</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Update badge
+            const unread = this.getAll().filter(i => !i.read).length;
+            const badge = document.getElementById('notifBadge');
+            if (badge) {
+                badge.textContent = unread > 9 ? '9+' : unread;
+                badge.style.display = unread > 0 ? '' : 'none';
+            }
+        }
+    };
+
+    // Initialize notification center rendering
+    NotifCenter.render();
+
+    // Notification bell toggle
+    document.getElementById('notifBellTrigger')?.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const dd = document.getElementById('notifDropdown');
+        const pd = document.getElementById('profileDropdown');
+        if (pd) pd.classList.remove('show');
+        dd?.classList.toggle('show');
+    });
+
+    // Profile dropdown toggle
+    document.getElementById('profileTrigger')?.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const pd = document.getElementById('profileDropdown');
+        const nd = document.getElementById('notifDropdown');
+        if (nd) nd.classList.remove('show');
+        pd?.classList.toggle('show');
+    });
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', function() {
+        document.getElementById('notifDropdown')?.classList.remove('show');
+        document.getElementById('profileDropdown')?.classList.remove('show');
+    });
+    // Prevent dropdown close when clicking inside
+    document.getElementById('notifDropdown')?.addEventListener('click', e => e.stopPropagation());
+    document.getElementById('profileDropdown')?.addEventListener('click', e => e.stopPropagation());
+
+    // =============================================
+    // ACTIVITY LOGGER
+    // =============================================
+    window.ActivityLog = {
+        KEY: 'activity_log_items',
+        getAll() {
+            try { return JSON.parse(localStorage.getItem(this.KEY)) || []; }
+            catch { return []; }
+        },
+        save(items) { localStorage.setItem(this.KEY, JSON.stringify(items)); },
+        log(action, module, status) {
+            const items = this.getAll();
+            items.unshift({
+                date: new Date().toISOString(),
+                action: action,
+                module: module || 'System',
+                ip: 'Client',
+                browser: navigator.userAgent.split('(')[0].trim(),
+                status: status || 'Success'
+            });
+            if (items.length > 200) items.length = 200;
+            this.save(items);
+        }
+    };
+
+    // Auto-log page visits
+    (function() {
+        const path = window.location.pathname;
+        const pageNames = {
+            '/': 'Dashboard', '/countries': 'Countries', '/weather': 'Weather',
+            '/economy': 'Economy', '/currency': 'Currency', '/ports': 'Ports',
+            '/news': 'News', '/analytics': 'Analytics', '/watchlist': 'Watchlist',
+            '/compare': 'Compare', '/map': 'Global Map', '/settings': 'Settings',
+            '/profile': 'Profile'
+        };
+        const name = pageNames[path] || path;
+        ActivityLog.log('Viewed ' + name, name);
+    })();
+
+    // Feed notifications from high-risk polling into NotifCenter
+    const _origCheckHighRisk = checkHighRisk;
+    checkHighRisk = function() {
+        const enableToast = localStorage.getItem('enable_toast') !== 'off';
+        const triggerHighRisk = localStorage.getItem('alert_high_risk') !== 'off';
+        const triggerWeather = localStorage.getItem('alert_weather') !== 'off';
+        const triggerNews = localStorage.getItem('alert_news') !== 'off';
+        const enableDesktop = localStorage.getItem('enable_desktop') === 'on';
+
+        fetch("{{ url('/api/high-risk') }}")
+            .then(r => r.json())
+            .then(data => {
+                if (lastHighRisk === null) {
+                    lastHighRisk = data.map(x => x.id);
+                    // Seed initial notifications
+                    data.slice(0, 5).forEach(item => {
+                        if (item.risk_level === 'High') {
+                            NotifCenter.add('risk', '⚠ ' + item.country.name + ' High Risk', 'Risk score: ' + item.total_score);
+                        }
+                    });
+                    NotifCenter.render();
+                    return;
+                }
+                data.forEach(item => {
+                    if (!lastHighRisk.includes(item.id)) {
+                        lastHighRisk.push(item.id);
+                        let type = 'risk', title = '', desc = '';
+
+                        if (item.risk_level === 'High' && triggerHighRisk) {
+                            type = 'risk'; title = '⚠ ' + item.country.name + ' risk increased';
+                            desc = 'Risk Score: ' + item.total_score;
+                        } else if (item.weather_score >= 60 && triggerWeather) {
+                            type = 'weather'; title = '⛈ Extreme weather in ' + item.country.name;
+                            desc = 'Weather Score: ' + item.weather_score;
+                        } else if (item.news_score >= 60 && triggerNews) {
+                            type = 'news'; title = '📰 Critical news from ' + item.country.name;
+                            desc = 'News Score: ' + item.news_score;
+                        } else {
+                            type = 'economic'; title = '📊 Economic update for ' + item.country.name;
+                            desc = 'Total Score: ' + item.total_score;
+                        }
+
+                        NotifCenter.add(type, title, desc);
+
+                        if (enableToast) {
+                            const toastEl = document.getElementById('riskToast');
+                            if (toastEl) {
+                                document.getElementById('toastMessage').innerHTML = `<strong>${title}</strong><br>${desc}`;
+                                new bootstrap.Toast(toastEl).show();
+                            }
+                        }
+                        if (enableDesktop && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                            new Notification(title, { body: desc });
+                        }
+                    }
+                });
+            });
+    };
 </script>
 
 @stack('scripts')

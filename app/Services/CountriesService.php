@@ -10,3 +10,4 @@ class CountriesService
     {
         return Http::get('https://countries.dev/countries')->json();
     }
+}

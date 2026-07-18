@@ -11,6 +11,9 @@ use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\CompareController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\GlobalMapController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ProfileController;
 
 // Guest Auth Routes
 Route::middleware('guest')->group(function () {
@@ -49,4 +52,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/watchlist/toggle/{country}', [WatchlistController::class, 'toggle'])->name('watchlist.toggle');
 
     Route::get('/compare', [CompareController::class, 'index'])->name('compare');
+    Route::get('/map', [GlobalMapController::class, 'index'])->name('map');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    // Admin Panel Routes
+    Route::middleware('admin')->prefix('admin')->group(function () {
+        Route::resource('users', \App\Http\Controllers\UserController::class);
+        Route::resource('articles', \App\Http\Controllers\ArticleController::class);
+    });
 });
