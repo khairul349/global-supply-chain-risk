@@ -862,10 +862,282 @@
                 justify-content: center;
                 padding: 12px;
                 margin-left: 8px;
-                margin-right: 8px;
             }
         }
+
+        /* ==========================================================================
+           ACCESSIBILITY & CONTRAST IMPROVEMENTS (WCAG AA CONFORMANT)
+           ========================================================================== */
+
+        /* 1. Global Backgrounds & Cards Override */
+        body.bg-dark, body {
+            background-color: #120F24 !important;
+            background: #120F24 !important;
+            color: #C7CBD4 !important;
+        }
+        .card, .table-container, .editor-card, .profile-details-card {
+            background-color: #1B1630 !important;
+            background: #1B1630 !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* 2. Text Elements & Headers Contrast */
+        h1, h2, h3, h4, h5, h6, 
+        .card-header, .card-title, .modal-title, .text-white, 
+        strong, th, thead th, .brand-title, .user-name {
+            color: #FFFFFF !important;
+        }
+        
+        p, .text-secondary, td, li, span, label, .form-label, .user-role {
+            color: #D1D5DB !important;
+        }
+
+        .text-muted, .text-muted-custom, small, .timestamp, .time, .notif-time, .timeline-time {
+            color: #9CA3AF !important;
+        }
+
+        /* 3. Input, Form, and Search contrast */
+        .form-control, .form-select, input, select, textarea, .search-input {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            color: #FFFFFF !important;
+        }
+        .form-control:focus, .form-select:focus, input:focus, select:focus, textarea:focus, .search-input:focus {
+            border-color: #8b5cf6 !important;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25) !important;
+            color: #FFFFFF !important;
+        }
+
+        /* Input Placeholders */
+        ::placeholder, 
+        .form-control::placeholder, 
+        .search-input::placeholder, 
+        .notif-search input::placeholder {
+            color: #A5B4C3 !important;
+            opacity: 1 !important;
+        }
+
+        /* 4. Sidebar Styles */
+        .nav-section-title {
+            color: #9CA3AF !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+        }
+        .nav-item {
+            color: #D1D5DB !important;
+        }
+        .nav-item:hover {
+            color: #FFFFFF !important;
+            background: rgba(255, 255, 255, 0.06) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        .nav-item.active {
+            color: #FFFFFF !important;
+            background: rgba(139, 92, 246, 0.25) !important;
+            border-color: rgba(139, 92, 246, 0.4) !important;
+        }
+
+        /* 5. Tables */
+        .table thead th, .admin-table th, table th {
+            color: #FFFFFF !important;
+            background-color: rgba(255, 255, 255, 0.02) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+        }
+        .table tbody td, .admin-table td, table td {
+            color: #D1D5DB !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+        }
+        .table tbody tr:hover td, .admin-table tr:hover td, table tr:hover td {
+            background-color: rgba(255, 255, 255, 0.04) !important;
+        }
+
+        /* 6. Form validation states */
+        .invalid-feedback, .text-danger, .status-error, .badge-inactive, .bg-danger {
+            color: #ff8787 !important;
+        }
+        .valid-feedback, .text-success, .status-success, .badge-active, .bg-success {
+            color: #4ef0b3 !important;
+        }
+
+        /* 7. Buttons */
+        .btn-primary, .btn-glass {
+            color: #FFFFFF !important;
+        }
+        .btn-outline-light {
+            border-color: rgba(255, 255, 255, 0.3) !important;
+            color: #FFFFFF !important;
+        }
+        .btn-outline-light:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: #FFFFFF !important;
+        }
+
+        /* 8. Badges */
+        .badge {
+            color: #FFFFFF !important;
+        }
+
+        /* 9. Audit overrides for standard bootstrap classes */
+        .text-dark { color: #D1D5DB !important; }
+        .text-secondary { color: #D1D5DB !important; }
+        .text-muted { color: #9CA3AF !important; }
+        .text-black { color: #FFFFFF !important; }
+        .text-body { color: #C7CBD4 !important; }
+
+        /* 10. Modal and Toast controls */
+        .modal-body { color: #D1D5DB !important; }
+        .custom-toast {
+            background: #1B1630 !important;
+            border: 1px solid rgba(139, 92, 246, 0.4) !important;
+            color: #FFFFFF !important;
+        }
+
+        /* 11. Leaflet Map Popup Contrast Overrides */
+        .leaflet-popup-content-wrapper {
+            background: rgba(15, 8, 30, 0.96) !important;
+            background-color: rgba(15, 8, 30, 0.96) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #FFFFFF !important;
+            border-radius: 16px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+        }
+        .leaflet-popup-tip {
+            background: rgba(15, 8, 30, 0.96) !important;
+            background-color: rgba(15, 8, 30, 0.96) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+        .leaflet-popup-content {
+            color: #D1D5DB !important;
+            font-family: inherit !important;
+        }
+        .leaflet-popup-content h1, 
+        .leaflet-popup-content h2, 
+        .leaflet-popup-content h3, 
+        .leaflet-popup-content h4, 
+        .leaflet-popup-content h5, 
+        .leaflet-popup-content h6, 
+        .leaflet-popup-content strong {
+            color: #FFFFFF !important;
+        }
+        .leaflet-popup-close-button {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+        .leaflet-popup-close-button:hover {
+            color: #FFFFFF !important;
+        }
+
+        /* 12. Global Dark Select / Dropdown Overrides */
+        /* Native fallback — ensures the select box itself is dark */
+        select,
+        .form-select {
+            background-color: rgba(18, 10, 35, 0.95) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 10px !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23a78bfa' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        }
+        select:focus,
+        .form-select:focus {
+            border-color: rgba(139, 92, 246, 0.6) !important;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18) !important;
+            outline: none !important;
+            background-color: rgba(22, 12, 42, 0.98) !important;
+        }
+        select option,
+        .form-select option {
+            background-color: #130b28 !important;
+            color: #ffffff !important;
+        }
+        select option:hover,
+        .form-select option:hover,
+        select option:checked,
+        .form-select option:checked {
+            background-color: rgba(139, 92, 246, 0.35) !important;
+            color: #c084fc !important;
+        }
+
+        /* Tom Select global dark theme overrides (for pages that use Tom Select) */
+        .ts-wrapper .ts-control {
+            background: rgba(18, 10, 35, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 10px !important;
+            color: #ffffff !important;
+            padding: 8px 12px !important;
+            box-shadow: none !important;
+            cursor: pointer;
+        }
+        .ts-wrapper.focus .ts-control,
+        .ts-wrapper.input-active .ts-control {
+            border-color: rgba(139, 92, 246, 0.6) !important;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18) !important;
+        }
+        .ts-wrapper .ts-control input {
+            color: #ffffff !important;
+            background: transparent !important;
+        }
+        .ts-wrapper .ts-control input::placeholder {
+            color: rgba(255, 255, 255, 0.38) !important;
+        }
+        .ts-dropdown {
+            background: rgba(14, 7, 28, 0.99) !important;
+            border: 1px solid rgba(139, 92, 246, 0.25) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.75) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            overflow: hidden;
+            z-index: 9999 !important;
+        }
+        .ts-dropdown .ts-dropdown-content {
+            max-height: 260px !important;
+            overflow-y: auto !important;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(139, 92, 246, 0.4) transparent;
+        }
+        .ts-dropdown .ts-dropdown-content::-webkit-scrollbar { width: 5px; }
+        .ts-dropdown .ts-dropdown-content::-webkit-scrollbar-track { background: transparent; }
+        .ts-dropdown .ts-dropdown-content::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.4);
+            border-radius: 3px;
+        }
+        .ts-dropdown .option {
+            color: #D1D5DB !important;
+            padding: 9px 14px !important;
+            font-size: 13px !important;
+            transition: background 0.15s ease;
+        }
+        .ts-dropdown .option:hover,
+        .ts-dropdown .option.active {
+            background: rgba(139, 92, 246, 0.22) !important;
+            color: #ffffff !important;
+        }
+        .ts-dropdown .option.selected {
+            background: rgba(139, 92, 246, 0.32) !important;
+            color: #c084fc !important;
+            font-weight: 600;
+        }
+        .ts-dropdown input.ts-search,
+        .ts-dropdown .ts-search-input {
+            background: rgba(25, 12, 48, 0.95) !important;
+            color: #ffffff !important;
+            border: none !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            padding: 9px 14px !important;
+            font-size: 13px !important;
+            width: 100%;
+            outline: none;
+        }
+        .ts-dropdown input.ts-search::placeholder { color: rgba(255,255,255,0.35) !important; }
+        .ts-wrapper .item { color: #ffffff !important; }
+        .ts-wrapper .placeholder { color: rgba(255, 255, 255, 0.38) !important; }
+        .ts-wrapper.form-select { padding: 0 !important; background: transparent !important; border: none !important; }
     </style>
+
+    <!-- Tom Select: Custom dark dropdown (globally available) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
 
     @stack('styles')
 
@@ -1582,6 +1854,18 @@
                 });
             });
     };
+
+    // Global Chart.js configuration overrides for better readability
+    if (typeof Chart !== 'undefined') {
+        Chart.defaults.color = '#D1D5DB';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.08)';
+        if (Chart.defaults.plugins && Chart.defaults.plugins.title) {
+            Chart.defaults.plugins.title.color = '#FFFFFF';
+        }
+        if (Chart.defaults.plugins && Chart.defaults.plugins.legend && Chart.defaults.plugins.legend.labels) {
+            Chart.defaults.plugins.legend.labels.color = '#D1D5DB';
+        }
+    }
 </script>
 
 @stack('scripts')

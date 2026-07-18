@@ -220,13 +220,31 @@ href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     border: none !important;
 }
 .leaflet-popup-content-wrapper {
-    background: var(--card-bg, #ffffff) !important;
-    color: var(--text-main, #1e293b) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    background: rgba(15, 8, 30, 0.96) !important;
+    background-color: rgba(15, 8, 30, 0.96) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
 }
 .leaflet-popup-tip {
-    background: var(--card-bg, #ffffff) !important;
+    background: rgba(15, 8, 30, 0.96) !important;
+    background-color: rgba(15, 8, 30, 0.96) !important;
+}
+.leaflet-popup-content {
+    color: #D1D5DB !important;
+}
+.leaflet-popup-content strong, .leaflet-popup-content h5, .leaflet-popup-content h6 {
+    color: #ffffff !important;
+}
+.leaflet-popup-close-button {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+.leaflet-popup-close-button:hover {
+    color: #ffffff !important;
+    background: transparent !important;
 }
 </style>
 
@@ -273,8 +291,8 @@ fetch("{{ url('/api/ports') }}")
         .addTo(portsLayer)
         .bindPopup(`
             <div style="font-family:'Plus Jakarta Sans',sans-serif; padding: 4px;">
-                <h6 style="font-weight:700; margin-bottom: 4px; font-size:14px; color:var(--text-main);">${port.name}</h6>
-                <span class="text-muted" style="font-size:12px;">Country: <strong>${port.country.name}</strong></span>
+                <h6 style="font-weight:700; margin-bottom: 4px; font-size:14px; color:#ffffff;">${port.name}</h6>
+                <span style="font-size:12px; color:#9CA3AF;">Country: <strong style="color:#D1D5DB;">${port.country.name}</strong></span>
             </div>
         `);
     });
@@ -382,22 +400,22 @@ fetch("{{ url('/api/vessels') }}")
 
         // Detailed popup content
         const popupContent = `
-            <div style="font-family:'Plus Jakarta Sans',sans-serif; width: 220px; padding: 4px; color: var(--text-main, #1e293b);">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color, #e5e7eb); padding-bottom: 6px; margin-bottom: 8px;">
-                    <h6 style="font-weight:700; margin: 0; font-size:14px; color:var(--text-main, #1e293b);">${vessel.name}</h6>
-                    <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: ${color}20; color: ${color}; border: 1px solid ${color}40;">
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; width: 220px; padding: 4px; color: #D1D5DB;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 6px; margin-bottom: 8px;">
+                    <h6 style="font-weight:700; margin: 0; font-size:14px; color:#ffffff;">${vessel.name}</h6>
+                    <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: ${color}30; color: ${color}; border: 1px solid ${color}60;">
                         ${vessel.type}
                     </span>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size:12px; margin-bottom: 8px;">
-                    <div><span class="text-muted" style="font-size:11px;">Status:</span><br><strong style="color:var(--text-main);">${vessel.status}</strong></div>
-                    <div><span class="text-muted" style="font-size:11px;">Speed:</span><br><strong style="color:var(--text-main);">${vessel.speed} kn</strong></div>
-                    <div><span class="text-muted" style="font-size:11px;">Heading:</span><br><strong id="popup-heading-${vessel.id}" style="color:var(--text-main);">${heading}°</strong></div>
-                    <div><span class="text-muted" style="font-size:11px;">IMO:</span><br><strong style="color:var(--text-main);">${vessel.imo || '-'}</strong></div>
+                    <div><span style="font-size:11px; color:#9CA3AF;">Status:</span><br><strong style="color:#D1D5DB;">${vessel.status}</strong></div>
+                    <div><span style="font-size:11px; color:#9CA3AF;">Speed:</span><br><strong style="color:#D1D5DB;">${vessel.speed} kn</strong></div>
+                    <div><span style="font-size:11px; color:#9CA3AF;">Heading:</span><br><strong id="popup-heading-${vessel.id}" style="color:#D1D5DB;">${heading}°</strong></div>
+                    <div><span style="font-size:11px; color:#9CA3AF;">IMO:</span><br><strong style="color:#D1D5DB;">${vessel.imo || '-'}</strong></div>
                 </div>
-                <div style="padding-top: 6px; border-top: 1px dashed var(--border-color, #e5e7eb); font-size:12px;">
-                    <span class="text-muted" style="font-size:11px;">Destination:</span><br>
-                    <strong style="color:var(--text-main);">${vessel.destination || 'Unknown'}</strong> ${vessel.port ? `<span class="text-muted" style="font-size:11px;">(${vessel.port.name})</span>` : ''}
+                <div style="padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.12); font-size:12px;">
+                    <span style="font-size:11px; color:#9CA3AF;">Destination:</span><br>
+                    <strong style="color:#D1D5DB;">${vessel.destination || 'Unknown'}</strong> ${vessel.port ? `<span style="font-size:11px; color:#9CA3AF;">(${vessel.port.name})</span>` : ''}
                 </div>
             </div>
         `;

@@ -383,7 +383,121 @@
         letter-spacing: 0.8px;
         margin-bottom: 4px;
     }
+    /* Dark mode native select override (fallback) */
+    .form-select,
+    #originCountry,
+    #destinationCountry {
+        background-color: rgba(20, 10, 40, 0.9) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(139, 92, 246, 0.35) !important;
+        border-radius: 10px !important;
+    }
+    .form-select option,
+    #originCountry option,
+    #destinationCountry option {
+        background-color: #1a0f35 !important;
+        color: #ffffff !important;
+    }
+
+    /* Tom Select custom dark theme overrides */
+    .ts-wrapper.form-select {
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+    }
+    .ts-wrapper .ts-control {
+        background: rgba(20, 10, 40, 0.92) !important;
+        border: 1px solid rgba(139, 92, 246, 0.35) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        padding: 8px 12px !important;
+        box-shadow: none !important;
+        cursor: pointer;
+    }
+    .ts-wrapper.focus .ts-control {
+        border-color: rgba(139, 92, 246, 0.7) !important;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18) !important;
+    }
+    .ts-wrapper .ts-control input {
+        color: #ffffff !important;
+        background: transparent !important;
+    }
+    .ts-wrapper .ts-control input::placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
+    }
+    .ts-dropdown {
+        background: rgba(18, 8, 35, 0.98) !important;
+        border: 1px solid rgba(139, 92, 246, 0.3) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        overflow: hidden;
+        z-index: 9999 !important;
+    }
+    .ts-dropdown .ts-dropdown-content {
+        max-height: 280px !important;
+        overflow-y: auto !important;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(139, 92, 246, 0.4) transparent;
+    }
+    .ts-dropdown .ts-dropdown-content::-webkit-scrollbar {
+        width: 5px;
+    }
+    .ts-dropdown .ts-dropdown-content::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .ts-dropdown .ts-dropdown-content::-webkit-scrollbar-thumb {
+        background: rgba(139, 92, 246, 0.4);
+        border-radius: 3px;
+    }
+    .ts-dropdown .option {
+        color: #D1D5DB !important;
+        padding: 9px 14px !important;
+        font-size: 13px !important;
+        transition: background 0.15s ease;
+    }
+    .ts-dropdown .option:hover,
+    .ts-dropdown .option.active {
+        background: rgba(139, 92, 246, 0.25) !important;
+        color: #ffffff !important;
+    }
+    .ts-dropdown .option.selected {
+        background: rgba(139, 92, 246, 0.35) !important;
+        color: #c084fc !important;
+        font-weight: 600;
+    }
+    .ts-dropdown .optgroup-header {
+        background: rgba(139, 92, 246, 0.08) !important;
+        color: rgba(255, 255, 255, 0.45) !important;
+        font-size: 11px !important;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 6px 14px !important;
+    }
+    .ts-dropdown input.ts-search {
+        background: rgba(30, 15, 55, 0.9) !important;
+        color: #ffffff !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+        width: 100%;
+        outline: none;
+    }
+    .ts-dropdown input.ts-search::placeholder {
+        color: rgba(255, 255, 255, 0.35) !important;
+    }
+    .ts-wrapper .item {
+        color: #ffffff !important;
+    }
+    .ts-wrapper .placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
+    }
 </style>
+@endpush
+
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
 @endpush
 
 @section('content')
@@ -682,6 +796,28 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+// Initialize Tom Select dark dropdowns for Route Planner
+document.addEventListener('DOMContentLoaded', function() {
+    ['originCountry', 'destinationCountry'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && !el.tomselect) {
+            new TomSelect('#' + id, {
+                maxOptions: null,
+                searchField: ['text'],
+                placeholder: el.options[0] ? el.options[0].text : 'Select...',
+                plugins: [],
+                render: {
+                    no_results: function(data, escape) {
+                        return '<div class="no-results" style="color:#9CA3AF;padding:10px 14px;font-size:13px;">No results for "<strong>' + escape(data.input) + '</strong>"</div>';
+                    }
+                }
+            });
+        }
+    });
+});
+</script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     // Inject php array as JSON
