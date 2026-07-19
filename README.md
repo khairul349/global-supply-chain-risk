@@ -247,3 +247,7 @@ Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 <div align="center">
   Dibangun dengan ❤️ menggunakan <strong>Laravel</strong>
 </div>
+
+
+## link untuk membuka aplikasi
+https://global-supply-chain-risk-production.up.railway.app/
